@@ -21,15 +21,3 @@ Result:
     "success": true
 }
 ```
-
-#### GET /crashReport/get/
-
-```bash
-curl -X GET -H "Content-Type: application/json" http://localhost/production/dangers-service/crashReports/get/
-```
-Result:
-```json
-{
-    
-}
-```
