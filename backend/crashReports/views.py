@@ -5,6 +5,7 @@ from django.http import HttpResponseBadRequest, JsonResponse, HttpResponseServer
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
+from datetime import datetime
 
 @method_decorator(csrf_exempt, name='dispatch')
 class PostCrashReportResource(View):
@@ -16,7 +17,8 @@ class PostCrashReportResource(View):
         
         try:
             CrashReport.objects.create(
-                timeSinceStart=json_data['timeSinceStart'],
+                startTime=datetime.fromtimestamp(json_data['startTime']),
+                crashTime=datetime.fromtimestamp(json_data['crashTime']),
                 errorMsg=json_data['errorMsg'],
             )
         except (KeyError):
@@ -25,12 +27,3 @@ class PostCrashReportResource(View):
             return HttpResponseServerError(json.dumps({"error": "Internal server error."}))
 
         return JsonResponse({"success": True})
-    
-
-@method_decorator(csrf_exempt, name='dispatch')
-class GetCrashReport(View):
-    def get(self, request):
-        print(CrashReport.objects.all())
-
-        return JsonResponse({"success": CrashReport.objects.all()})
-        
