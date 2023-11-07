@@ -20,6 +20,7 @@ class PostCrashReportResource(View):
                 startTime=datetime.fromtimestamp(json_data['startTime']),
                 crashTime=datetime.fromtimestamp(json_data['crashTime']),
                 errorMsg=json_data['errorMsg'],
+                serviceName=json_data['serviceName']
             )
         except (KeyError):
             return HttpResponseBadRequest(json.dumps({"error": "Invalid request."}))

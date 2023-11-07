@@ -13,8 +13,11 @@ class CrashReport(models.Model):
     # The error message that got displayed
     errorMsg = models.TextField(default="")
 
+    # The name of the service that crashed.
+    serviceName = models.CharField(max_length=255)
+
     def __str__(self) -> str:
-        return f"Started {self.startTime}, crashed {self.crashTime} and exited with: {self.errorMsg}"
+        return f"Biker started {self.startTime}, crashed {self.crashTime} at Service {self.serviceName} with: {self.errorMsg}"
 
     class Meta:
         verbose_name = "CrashReport"
