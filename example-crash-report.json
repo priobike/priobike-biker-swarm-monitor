@@ -1,5 +1,6 @@
 {
     "startTime": 1699260761,
     "crashTime": 1699260761,
-    "errorMsg": "Error message"
+    "errorMsg": "Other",
+    "serviceName": "Test-Service"
 }

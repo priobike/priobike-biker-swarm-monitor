@@ -10,10 +10,22 @@ docker-compose up
 
 ## REST Endpoints
 
-#### POST /crashReport/post/
+#### POST /crashReport/crash/post/
 
 ```bash
-curl --data "@example-crash-report.json" -X POST -H "Content-Type: application/json" http://localhost/production/biker-swarm-monitor/crashReports/post/
+curl --data "@example-crash-report.json" -X POST -H "Content-Type: application/json" http://localhost/production/biker-swarm-monitor/crashReports/crash/post/
+```
+Result:
+```json
+{
+    "success": true
+}
+```
+
+#### POST /crashReport/success/post/
+
+```bash
+curl --data "@example-success-report.json" -X POST -H "Content-Type: application/json" http://localhost/production/biker-swarm-monitor/crashReports/success/post/
 ```
 Result:
 ```json

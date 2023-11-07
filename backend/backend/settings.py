@@ -94,18 +94,26 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        # PostGIS database
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        
-        'NAME': os.environ.get('POSTGRES_NAME'),
-        'USER': os.environ.get('POSTGRES_USER'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
-        'HOST': os.environ.get('POSTGRES_HOST'),
-        'PORT': os.environ.get('POSTGRES_PORT'),
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            # PostGIS database
+            'ENGINE': 'django.contrib.gis.db.backends.postgis',
+            
+            'NAME': os.environ.get('POSTGRES_NAME'),
+            'USER': os.environ.get('POSTGRES_USER'),
+            'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+            'HOST': os.environ.get('POSTGRES_HOST'),
+            'PORT': os.environ.get('POSTGRES_PORT'),
+        }
+    }
 
 
 # Password validation
@@ -153,13 +161,3 @@ STATIC_ROOT =  os.path.join(BASE_DIR, 'static')
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# Geosystems config
-
-# SRID 4326 is the standard WGS84 projection with latitude and longitude
-WGS84_SRID = 4326
-LONLAT = WGS84_SRID
-
-# The Mercator projection is used to represent distances in meters
-MERCATOR_SRID = 3857
-METRICAL = MERCATOR_SRID
