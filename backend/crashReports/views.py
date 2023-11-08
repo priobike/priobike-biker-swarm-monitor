@@ -1,5 +1,6 @@
 import json
 
+import math
 from django.conf import settings
 from crashReports.models import CrashReport, SuccessReport
 from django.db.models import Count
@@ -76,8 +77,82 @@ class GetMetricsResource(View):
         for errorMsg, serviceName, count in counts:
             metrics.append(f'n_crash_reports{{service_name="{serviceName}", error_msg="{errorMsg}"}} {count}')
         
-        # Average times TODO.
+        # Count the number of durations in time intervalls of 10 seconds for success reports.
+        binSize = 10 # Size in seconds.
+        
+        durations = []
+        maxDuration = 0 # Max duration of a report.
+        
+
+        successReports = SuccessReport.objects \
+            .values_list("startTime", "endTime") 
+        
+        # Get all durations.
+        for startTime, endTime in successReports:
+            duration = endTime - startTime
+            if duration.total_seconds() >= 0 and duration.total_seconds() < 60 * 60:
+                durations.append(duration.total_seconds())
+
+        bins = {}
+        # Create bins for durations and count them.
+        for duration in durations:
+            # Cast duration to bin range.
+            ratio = math.trunc(duration / binSize)
+            binRangeName = getBinRangeNameByDuration(ratio, binSize)
+
+            # Add duration to bins.
+            if binRangeName in bins:
+                bins[binRangeName] += 1
+            else:
+                # Add new bins to bins.
+                for i in range(maxDuration, ratio + 1):
+                    binName = getBinRangeNameByDuration(i, binSize)
+                    bins[binName] = 0
+                maxDuration = ratio + 1
+                bins[getBinRangeNameByDuration(math.trunc(duration / binSize), binSize)] += 1
+
+        for key, value in bins.items():
+            metrics.append(f'n_success_durations{{bin="{key}"}} {value}')
+
+        # Count the number of duration in time intervalls of 10 seconds for crash reports.
+        durations = []
+        maxDuration = 0
+
+        crashReports = CrashReport.objects \
+            .values_list("startTime", "crashTime") 
+        
+        # Get all durations.
+        for startTime, crashTime in crashReports:
+            duration = crashTime - startTime
+            if duration.total_seconds() >= 0 and duration.total_seconds() < 60 * 60:
+                durations.append(duration.total_seconds())
+        
+        bins = {}
+        # Create bins for durations and count them.
+        for duration in durations:
+            # Cast duration to bin range.
+            ratio = math.trunc(duration / binSize)
+            binRangeName = getBinRangeNameByDuration(ratio, binSize)
+
+            # Add duration to bins.
+            if binRangeName in bins:
+                bins[binRangeName] += 1
+            else:
+                # Add new bins to bins.
+                for i in range(maxDuration, ratio + 1):
+                    binName = getBinRangeNameByDuration(i, binSize)
+                    bins[binName] = 0
+                maxDuration = ratio + 1
+                bins[getBinRangeNameByDuration(math.trunc(duration / binSize), binSize)] += 1
+
+        for key, value in bins.items():
+            metrics.append(f'n_crash_durations{{bin="{key}"}} {value}')
+        
 
         content = '\n'.join(metrics) + '\n'
         return HttpResponse(content, content_type='text/plain')
+
+def getBinRangeNameByDuration(ratio, binSize):
+    return f'{ratio * binSize}-{ratio * binSize + binSize}'
+
 
