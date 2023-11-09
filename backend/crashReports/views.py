@@ -180,12 +180,12 @@ def getBinRangeNameByDuration(ratio, binSize):
     return f'{ratio * binSize}-{ratio * binSize + binSize}'
 
 def getSanitizedMessage(errorMsg):
-    sanitzedMessage = ""
+    sanitizedMessage = ""
     errorMsgSplit = errorMsg.split(" ")
     for part in errorMsgSplit:
         if "http" not in part:
-            sanitzedMessage += part
+            sanitizedMessage += part
 
-    return sanitzedMessage
+    return sanitizedMessage
 
 
