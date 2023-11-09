@@ -184,7 +184,7 @@ def getSanitizedMessage(errorMsg):
     errorMsgSplit = errorMsg.split(" ")
     for part in errorMsgSplit:
         if "http" not in part:
-            sanitizedMessage += part
+            sanitizedMessage += " " + part 
 
     return sanitizedMessage
 
