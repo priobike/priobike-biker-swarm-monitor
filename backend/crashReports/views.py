@@ -74,8 +74,32 @@ class GetMetricsResource(View):
             .values("errorMsg", "serviceName") \
             .annotate(v=Count('errorMsg')) \
             .values_list("errorMsg", "serviceName", "v")
+        
+        countsSanitized = []
+        # Sanitize error messages.
         for errorMsg, serviceName, count in counts:
-            metrics.append(f'n_crash_reports{{service_name="{serviceName}", error_msg="{errorMsg}"}} {count}')
+            countsSanitized.append({"serviceName": serviceName, "errorMsg": getSanitizedMessage(errorMsg), "count": count})
+
+        # Fix counters.
+        countsSanitizedFixed = []
+        for countSanitized in countsSanitized:
+        
+            isNew = True
+            for countSanitizedFixed in countsSanitizedFixed:
+                if countSanitizedFixed["serviceName"] == countSanitized["serviceName"] and countSanitizedFixed["errorMsg"] == countSanitized["errorMsg"]:
+                    isNew = False
+                    countSanitizedFixed["count"] += 1
+            
+            if isNew:
+                countsSanitizedFixed.append(countSanitized)
+
+        
+        for countSanitizedFixed in countsSanitizedFixed:
+            metrics.append(f'n_crash_reports{{service_name="{countSanitizedFixed["serviceName"]}", error_msg="{countSanitizedFixed["errorMsg"]}"}} {countSanitizedFixed["count"]}')
+        
+
+            
+        
         
         # Count the number of durations in time intervalls of 10 seconds for success reports.
         binSize = 10 # Size in seconds.
@@ -154,5 +178,14 @@ class GetMetricsResource(View):
 
 def getBinRangeNameByDuration(ratio, binSize):
     return f'{ratio * binSize}-{ratio * binSize + binSize}'
+
+def getSanitizedMessage(errorMsg):
+    sanitzedMessage = ""
+    errorMsgSplit = errorMsg.split(" ")
+    for part in errorMsgSplit:
+        if "http" not in part:
+            sanitzedMessage += part
+
+    return sanitzedMessage
 
 

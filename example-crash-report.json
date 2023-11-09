@@ -1,6 +1,6 @@
 {
     "startTime": 1699260761,
     "crashTime": 1699260901,
-    "errorMsg": "Other",
+    "errorMsg": "Photon Reverse Geocode - Get https://priobike.vkw.tu-dresden.de/production/photon/reverse?lon=9.983732&lat=53.518475 : context deadline exceeded (Client.Timeout exceeded while awaiting headers)",
     "serviceName": "Test-Service"
 }
