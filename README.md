@@ -1,4 +1,4 @@
-# Biker Swarm Monitor
+# priobike-biker-swarm-monitor
 
 A microservice to receive and monitor data from the [bikerswarm](https://github.com/priobike/priobike-biker-swarm).
 
